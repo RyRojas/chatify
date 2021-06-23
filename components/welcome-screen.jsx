@@ -41,7 +41,11 @@ export default function WelcomeScreen({ navigation }) {
           />
         </View>
 
-        <View style={styles.bgColorContainer}>
+        <View
+          style={styles.bgColorContainer}
+          accessibilityLabel="Background color selector."
+          accessibilityRole="radiogroup"
+        >
           <Text style={styles.text}>Choose Background Color:</Text>
           <View style={styles.choiceContainer}>
             <View
@@ -51,6 +55,12 @@ export default function WelcomeScreen({ navigation }) {
               ]}
             >
               <TouchableOpacity
+                accessible={true}
+                accessibilityLabel="Black background choice."
+                accessibilityRole="radio"
+                accessibilityState={{
+                  selected: bgColor === '#090C08' ? true : false,
+                }}
                 style={styles.choice}
                 onPress={() => setBgColor('#090C08')}
               />
@@ -62,6 +72,12 @@ export default function WelcomeScreen({ navigation }) {
               ]}
             >
               <TouchableOpacity
+                accessible={true}
+                accessibilityLabel="Purple background choice."
+                accessibilityRole="radio"
+                accessibilityState={{
+                  selected: bgColor === '#474056' ? true : false,
+                }}
                 style={[styles.choice, { backgroundColor: '#474056' }]}
                 onPress={() => setBgColor('#474056')}
               />
@@ -73,6 +89,12 @@ export default function WelcomeScreen({ navigation }) {
               ]}
             >
               <TouchableOpacity
+                accessible={true}
+                accessibilityLabel="Blue background choice."
+                accessibilityRole="radio"
+                accessibilityState={{
+                  selected: bgColor === '#8A95A5' ? true : false,
+                }}
                 style={[styles.choice, { backgroundColor: '#8A95A5' }]}
                 onPress={() => setBgColor('#8A95A5')}
               />
@@ -84,6 +106,12 @@ export default function WelcomeScreen({ navigation }) {
               ]}
             >
               <TouchableOpacity
+                accessible={true}
+                accessibilityLabel="Green background choice."
+                accessibilityRole="radio"
+                accessibilityState={{
+                  selected: bgColor === '#B9C6AE' ? true : false,
+                }}
                 style={[styles.choice, { backgroundColor: '#B9C6AE' }]}
                 onPress={() => setBgColor('#B9C6AE')}
               />
@@ -91,7 +119,14 @@ export default function WelcomeScreen({ navigation }) {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+        <TouchableOpacity
+          accessible={true}
+          accessibilityLabel="Start Chatting"
+          accessibilityHint="Navigates to chat screen."
+          accessibilityRole="button"
+          style={styles.button}
+          onPress={handleSubmit}
+        >
           <Text style={styles.buttonText}>Start Chatting</Text>
         </TouchableOpacity>
       </View>
@@ -145,6 +180,7 @@ const styles = StyleSheet.create({
 
   inputField: {
     width: '100%',
+    height: '100%',
     paddingLeft: 15,
   },
 
@@ -162,16 +198,16 @@ const styles = StyleSheet.create({
   },
 
   choice: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: '#090C08',
   },
 
   choiceHalo: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     borderColor: '#090C0800',
     borderWidth: 1,
     alignItems: 'center',
