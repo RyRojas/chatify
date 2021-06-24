@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -15,15 +15,45 @@ import icon from '../assets/user-icon.png';
 
 export default function WelcomeScreen({ navigation }) {
   let [name, setName] = useState(''),
-    [bgColor, setBgColor] = useState('#090C08');
+    [selectedScheme, setSelectedScheme] = useState({});
 
+  const colorSchemes = [
+    {
+      name: 'Black',
+      background: '#090C08',
+      rightBubble: '#75a3c9',
+    },
+    {
+      name: 'Purple',
+      background: '#474056',
+      rightBubble: '#726787',
+    },
+    {
+      name: 'Blue',
+      background: '#8A95A5',
+      rightBubble: '#596d8c',
+    },
+    {
+      name: 'Green',
+      background: '#B9C6AE',
+      rightBubble: '#829c69',
+    },
+  ];
+
+  //Initialize state
+  useEffect(() => setSelectedScheme(colorSchemes[0]), []);
+
+  //Ensures username is entered prior to navigation
   const handleSubmit = () => {
     if (!name) {
       return Alert.alert(null, 'Please enter your name');
     }
 
-    navigation.navigate('Chat', { name: name, bgColor: bgColor });
+    navigation.navigate('Chat', { name: name, colorScheme: selectedScheme });
   };
+
+  const isSelected = (scheme) =>
+    selectedScheme.background === scheme.background;
 
   return (
     <ImageBackground source={background} style={styles.image}>
@@ -48,74 +78,31 @@ export default function WelcomeScreen({ navigation }) {
         >
           <Text style={styles.text}>Choose Background Color:</Text>
           <View style={styles.choiceContainer}>
-            <View
-              style={[
-                styles.choiceHalo,
-                bgColor === '#090C08' && { borderColor: bgColor },
-              ]}
-            >
-              <TouchableOpacity
-                accessible={true}
-                accessibilityLabel="Black background choice."
-                accessibilityRole="radio"
-                accessibilityState={{
-                  selected: bgColor === '#090C08' ? true : false,
-                }}
-                style={styles.choice}
-                onPress={() => setBgColor('#090C08')}
-              />
-            </View>
-            <View
-              style={[
-                styles.choiceHalo,
-                bgColor === '#474056' && { borderColor: bgColor },
-              ]}
-            >
-              <TouchableOpacity
-                accessible={true}
-                accessibilityLabel="Purple background choice."
-                accessibilityRole="radio"
-                accessibilityState={{
-                  selected: bgColor === '#474056' ? true : false,
-                }}
-                style={[styles.choice, { backgroundColor: '#474056' }]}
-                onPress={() => setBgColor('#474056')}
-              />
-            </View>
-            <View
-              style={[
-                styles.choiceHalo,
-                bgColor === '#8A95A5' && { borderColor: bgColor },
-              ]}
-            >
-              <TouchableOpacity
-                accessible={true}
-                accessibilityLabel="Blue background choice."
-                accessibilityRole="radio"
-                accessibilityState={{
-                  selected: bgColor === '#8A95A5' ? true : false,
-                }}
-                style={[styles.choice, { backgroundColor: '#8A95A5' }]}
-                onPress={() => setBgColor('#8A95A5')}
-              />
-            </View>
-            <View
-              style={[
-                styles.choiceHalo,
-                bgColor === '#B9C6AE' && { borderColor: bgColor },
-              ]}
-            >
-              <TouchableOpacity
-                accessible={true}
-                accessibilityLabel="Green background choice."
-                accessibilityRole="radio"
-                accessibilityState={{
-                  selected: bgColor === '#B9C6AE' ? true : false,
-                }}
-                style={[styles.choice, { backgroundColor: '#B9C6AE' }]}
-                onPress={() => setBgColor('#B9C6AE')}
-              />
-            </View>
+            {colorSchemes.map((colorScheme) => (
+              <View
+                key={colorScheme.name}
+                style={[
+                  styles.choiceHalo,
+                  isSelected(colorScheme) && {
+                    borderColor: colorScheme.background,
+                  },
+                ]}
+              >
+                <TouchableOpacity
+                  accessible={true}
+                  accessibilityLabel={`${colorScheme.name} background choice.`}
+                  accessibilityRole="radio"
+                  accessibilityState={{
+                    selected: isSelected(colorScheme),
+                  }}
+                  style={[
+                    styles.choice,
+                    { backgroundColor: colorScheme.background },
+                  ]}
+                  onPress={() => setSelectedScheme(colorScheme)}
+                />
+              </View>
+            ))}
           </View>
         </View>
 
@@ -201,7 +188,6 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#090C08',
   },
 
   choiceHalo: {

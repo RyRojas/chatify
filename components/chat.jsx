@@ -4,7 +4,7 @@ import { GiftedChat, Bubble } from 'react-native-gifted-chat';
 
 export default function Chat({ navigation, route }) {
   //Props from user input on welcome screen
-  const { name, bgColor } = route.params;
+  const { name, colorScheme } = route.params;
 
   let [messages, setMessages] = useState([]);
 
@@ -40,7 +40,7 @@ export default function Chat({ navigation, route }) {
     return (
       <Bubble
         {...props}
-        wrapperStyle={{ right: { backgroundColor: '#000' } }}
+        wrapperStyle={{ right: { backgroundColor: colorScheme.rightBubble } }}
       />
     );
   };
@@ -49,7 +49,7 @@ export default function Chat({ navigation, route }) {
   useEffect(() => navigation.setOptions({ title: name }), [navigation, name]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: bgColor }}>
+    <View style={{ flex: 1, backgroundColor: colorScheme.background }}>
       <GiftedChat
         renderBubble={renderBubble}
         messages={messages}
