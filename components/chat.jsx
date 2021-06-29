@@ -12,6 +12,7 @@ import 'firebase/firestore';
 
 export default function Chat({ navigation, route }) {
   //Remove React warnings for firebase timers
+  LogBox.ignoreLogs(['Setting a timer']);
 
   //Props from user input on welcome screen
   const { name, colorScheme } = route.params;
@@ -108,7 +109,7 @@ export default function Chat({ navigation, route }) {
     const refUnsub = getMessages();
 
     //Unsub on unmount
-    return authUnsub() && refUnsub();
+    return authUnsub && refUnsub;
   }, []);
 
   return (
