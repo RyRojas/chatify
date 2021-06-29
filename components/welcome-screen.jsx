@@ -17,6 +17,9 @@ export default function WelcomeScreen({ navigation }) {
   let [name, setName] = useState(''),
     [selectedScheme, setSelectedScheme] = useState({});
 
+  //If additional color schemes are desired, simply add it to
+  //below array and the app will render an additional button
+
   const colorSchemes = [
     {
       name: 'Black',
@@ -40,7 +43,7 @@ export default function WelcomeScreen({ navigation }) {
     },
   ];
 
-  //Initialize state
+  //Initialize color scheme state
   useEffect(() => setSelectedScheme(colorSchemes[0]), []);
 
   //Ensures username is entered prior to navigation
