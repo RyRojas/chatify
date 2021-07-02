@@ -161,18 +161,19 @@ export default function Chat({ navigation, route }) {
 
   return (
     <View style={{ flex: 1, backgroundColor: colorScheme.background }}>
-      {isLoading ? (
-        <Text>Loading...</Text>
-      ) : (
-        <GiftedChat
-          renderBubble={renderBubble}
-          messages={messages}
-          onSend={(messages) => onSend(messages)}
-          user={user}
-          renderUsernameOnMessage={true}
-          renderInputToolbar={renderInputToolbar}
-        />
-      )}
+      <Text>Loading...</Text>
+      <GiftedChat
+        renderBubble={renderBubble}
+        messages={messages}
+        onSend={(messages) => onSend(messages)}
+        user={user}
+        renderUsernameOnMessage={true}
+        renderInputToolbar={renderInputToolbar}
+      />
+      {/* Ensures proper input/keyboard rendering on select android devices */}
+      {Platform.OS === 'android' ? (
+        <KeyboardAvoidingView behavior="height" />
+      ) : null}
     </View>
   );
 }
