@@ -6,7 +6,7 @@ import {
   Platform,
   KeyboardAvoidingView,
 } from 'react-native';
-import { GiftedChat, Bubble } from 'react-native-gifted-chat';
+import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat';
 import firebase from 'firebase';
 import 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -128,16 +128,6 @@ export default function Chat({ navigation, route }) {
     addMessage(messages[0]);
   }, []);
 
-  //Custom renderBubble function to change wrapper (speech bubble) color
-  const renderBubble = (props) => {
-    return (
-      <Bubble
-        {...props}
-        wrapperStyle={{ right: { backgroundColor: colorScheme.rightBubble } }}
-      />
-    );
-  };
-
   //Update title with user input -- useEffect to avoid component update warnings
   useEffect(() => navigation.setOptions({ title: name }), [navigation, name]);
 
@@ -154,6 +144,21 @@ export default function Chat({ navigation, route }) {
     }
   }, [netInfo]);
 
+  //Custom renderBubble function to change wrapper (speech bubble) color
+  const renderBubble = (props) => {
+    return (
+      <Bubble
+        {...props}
+        wrapperStyle={{ right: { backgroundColor: colorScheme.rightBubble } }}
+      />
+    );
+  };
+
+  //Custom render function so that input toolbar only appears while online
+  const renderInputToolbar = (props) => {
+    return netInfo.isConnected === false ? null : <InputToolbar {...props} />;
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: colorScheme.background }}>
       {isLoading ? (
@@ -165,6 +170,7 @@ export default function Chat({ navigation, route }) {
           onSend={(messages) => onSend(messages)}
           user={user}
           renderUsernameOnMessage={true}
+          renderInputToolbar={renderInputToolbar}
         />
       )}
     </View>
