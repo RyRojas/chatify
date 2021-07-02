@@ -9,6 +9,8 @@ import {
 import { GiftedChat, Bubble } from 'react-native-gifted-chat';
 import firebase from 'firebase';
 import 'firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 export default function Chat({ navigation, route }) {
   //Remove React warnings for firebase timers
@@ -16,6 +18,9 @@ export default function Chat({ navigation, route }) {
 
   //Props from user input on welcome screen
   const { name, colorScheme } = route.params;
+
+  //Hook for online status
+  const netInfo = useNetInfo();
 
   let [messages, setMessages] = useState([]),
     [user, setUser] = useState({}),
@@ -55,6 +60,7 @@ export default function Chat({ navigation, route }) {
           });
         });
         setMessages(messages);
+        saveMessages(messages); //Called here so that asyncstorage accurately reflects firebase store
       });
   };
 
@@ -66,11 +72,14 @@ export default function Chat({ navigation, route }) {
         await firebase.auth().signInAnonymously();
       }
 
-      setUser({
+      const userData = {
         _id: user.uid,
         name: name,
         avatar: 'https://placeimg.com/140/140/any',
-      });
+      };
+
+      setUser(userData);
+      saveUser(userData);
       setIsLoading(false);
     });
   };
@@ -78,6 +87,36 @@ export default function Chat({ navigation, route }) {
   //Adds message to firebase store
   const addMessage = (message) => {
     refMessages.add(message);
+  };
+
+  //Retrieve local messages/user (used on initial mount/when offline)
+  const loadLocalData = async () => {
+    try {
+      const savedMessages = await (AsyncStorage.getItem('messages') || []);
+      const user = await (AsyncStorage.getItem('user') || {});
+      setMessages(JSON.parse(savedMessages));
+      setUser(JSON.parse(user));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  //Save a local copy of the messages array
+  const saveMessages = async (messages) => {
+    try {
+      await AsyncStorage.setItem('messages', JSON.stringify(messages));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  //Save user info locally
+  const saveUser = async (user) => {
+    try {
+      await AsyncStorage.setItem('user', JSON.stringify(user));
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   //Adds user's message to state and firebase store
@@ -102,15 +141,18 @@ export default function Chat({ navigation, route }) {
   //Update title with user input -- useEffect to avoid component update warnings
   useEffect(() => navigation.setOptions({ title: name }), [navigation, name]);
 
-  //Authenticate and subscribes to store on mount
+  //Authenticate and subscribes to store on mount (reruns on netInfo change)
   useEffect(() => {
-    //Run authentication and message requests and store returned unsub functions
-    const authUnsub = authenticateUser();
-    const refUnsub = getMessages();
+    loadLocalData();
+    if (netInfo.isConnected) {
+      //Run authentication and message requests and store returned unsub functions
+      const authUnsub = authenticateUser();
+      const refUnsub = getMessages();
 
-    //Unsub on unmount
-    return authUnsub && refUnsub;
-  }, []);
+      //Unsub on unmount
+      return authUnsub && refUnsub;
+    }
+  }, [netInfo]);
 
   return (
     <View style={{ flex: 1, backgroundColor: colorScheme.background }}>
