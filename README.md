@@ -1,6 +1,8 @@
 # chatify
 A mobile chat app built using React Native.
 
+![chatify](/chatify-showcase.gif)
+
 ## Tech
 - React Native
 - Expo
