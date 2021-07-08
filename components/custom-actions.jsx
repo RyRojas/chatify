@@ -7,6 +7,7 @@ import firebase from 'firebase';
 import 'firebase/firestore';
 
 export default function CustomActions(props) {
+  //Allows user to upload image from library
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -22,6 +23,7 @@ export default function CustomActions(props) {
     }
   };
 
+  //Allows user to upload photo via camera
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
 
@@ -35,6 +37,7 @@ export default function CustomActions(props) {
     }
   };
 
+  //Sends user's location
   const sendLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
 
