@@ -1,21 +1,25 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
-  Text,
   LogBox,
   Platform,
   KeyboardAvoidingView,
+  StyleSheet,
 } from 'react-native';
-import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat';
+import MapView, { Marker } from 'react-native-maps';
+import {
+  GiftedChat,
+  Bubble,
+  InputToolbar,
+  Day,
+} from 'react-native-gifted-chat';
 import firebase from 'firebase';
 import 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNetInfo } from '@react-native-community/netinfo';
+import CustomActions from './custom-actions';
 
 export default function Chat({ navigation, route }) {
-  //Remove React warnings for firebase timers
-  LogBox.ignoreLogs(['Setting a timer']);
-
   //Props from user input on welcome screen
   const { name, colorScheme } = route.params;
 
@@ -57,6 +61,9 @@ export default function Chat({ navigation, route }) {
             createdAt: data.createdAt.toDate(),
             text: data.text,
             user: data.user,
+            image: data.image,
+            location: data.location,
+            system: data.system,
           });
         });
         setMessages(messages);
@@ -154,14 +161,47 @@ export default function Chat({ navigation, route }) {
     );
   };
 
+  const renderDay = (props) => {
+    return (
+      <Day {...props} textStyle={!colorScheme.isDark && { color: '#474747' }} />
+    );
+  };
+
   //Custom render function so that input toolbar only appears while online
-  const renderInputToolbar = (props) => {
-    return netInfo.isConnected === false ? null : <InputToolbar {...props} />;
+  const renderInputToolbar = (props) =>
+    netInfo.isConnected === false ? null : <InputToolbar {...props} />;
+
+  const renderCustomActions = (props) => <CustomActions {...props} />;
+
+  //Check if current message contains geolocation and renders map if necessary
+  const renderCustomView = ({ currentMessage }) => {
+    if (currentMessage.location) {
+      const coords = {
+        latitude: currentMessage.location.latitude,
+        longitude: currentMessage.location.longitude,
+      };
+
+      return (
+        <View style={styles.container}>
+          <MapView
+            style={styles.map}
+            region={{
+              latitude: coords.latitude,
+              longitude: coords.longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+          >
+            <Marker coordinate={coords} />
+          </MapView>
+        </View>
+      );
+    }
+    return null;
   };
 
   return (
     <View style={{ flex: 1, backgroundColor: colorScheme.background }}>
-      <Text>Loading...</Text>
       <GiftedChat
         renderBubble={renderBubble}
         messages={messages}
@@ -169,6 +209,9 @@ export default function Chat({ navigation, route }) {
         user={user}
         renderUsernameOnMessage={true}
         renderInputToolbar={renderInputToolbar}
+        renderActions={renderCustomActions}
+        renderCustomView={renderCustomView}
+        renderDay={renderDay}
       />
       {/* Ensures proper input/keyboard rendering on select android devices */}
       {Platform.OS === 'android' ? (
@@ -177,3 +220,17 @@ export default function Chat({ navigation, route }) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    width: 250,
+    height: 150,
+    borderRadius: 10,
+    margin: 5,
+    overflow: 'hidden',
+  },
+  map: {
+    width: '100%',
+    height: '100%',
+  },
+});
