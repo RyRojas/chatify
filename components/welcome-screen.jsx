@@ -25,21 +25,25 @@ export default function WelcomeScreen({ navigation }) {
       name: 'Black',
       background: '#090C08',
       rightBubble: '#75a3c9',
+      isDark: true,
     },
     {
       name: 'Purple',
       background: '#474056',
       rightBubble: '#726787',
+      isDark: true,
     },
     {
       name: 'Blue',
       background: '#8A95A5',
       rightBubble: '#596d8c',
+      isDark: false,
     },
     {
       name: 'Green',
       background: '#B9C6AE',
       rightBubble: '#829c69',
+      isDark: false,
     },
   ];
 
